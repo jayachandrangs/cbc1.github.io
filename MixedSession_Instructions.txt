@@ -1,0 +1,96 @@
+General Structure and Variable Definitions
+Define players list structure:
+Each player is represented as a dictionary with:
+	"name" (string): Player's name.
+	"division" (float): Player's primary division ranking.
+	"Secondary_Division" (optional; could be another metric if needed, otherwise defaults to division).
+	"allotted" (integer): Tracks if a player is allocated (0 if unallocated, 1 if allocated).
+	"1_played", "1.5_played", "mixed" (integer): Flags for tracking if the player has been paired with others based on specific division differences.
+
+Initialize players with default values:
+	Use an initialize_players function that accepts a list of player names and divisions, creates dictionaries with default values, and appends each dictionary to the players list.
+
+Functions for Court Allocations
+	reset_allotments
+		Purpose: Reset the "allotted" field of each player to 0, indicating they are eligible for allocation in the new session.
+		Instructions: Loop through each player in players and set "allotted" to 0.
+	print_court_allocations
+		Purpose: Print the current court allocations in a structured format.
+		Instructions: For each court, print the court number and the names of players assigned to it.
+	rest_players
+		Purpose: Select and mark specific players as rested in each session.
+		Parameters:
+		players: List of all player dictionaries.
+		rest_indices: List of indices representing players to rest.
+		Instructions:
+		For each index in rest_indices, set the player’s "allotted" to 1.
+		Add each rested player’s name to rested_players list for output.
+	allocate_players
+		Purpose: Main function to allocate players to courts, with custom selection criteria passed as select_fn.
+		Parameters:
+		players: List of player dictionaries.
+		courts: Dictionary for storing court allocations.
+		select_fn: Function that specifies selection criteria.
+		session_num: Current session number for output tracking.
+		Instructions:
+		For each court (5 courts), try to allocate four players using the select_fn.
+		When a player is selected, mark "allotted" as 1 and add the player to the court.
+		Track division difference between the first and last players on a court and set "1_played", "1.5_played", or "mixed" fields accordingly.
+		If no eligible players remain, print a message indicating no available players.
+Player Selection Logic for Each Session
+	Session 1: Highest Division Players
+		Purpose: Allocate players with the highest division rank to each court.
+		Instructions:
+		Call reset_allotments.
+		Define rest_indices for players to rest and call rest_players.
+		Set select_fn to select the player with the maximum division (max(players, key=lambda x: x["division"])).
+		Call allocate_players with this function to populate courts.
+		Print the court allocations.
+	Session 2: Lowest Secondary Division
+		Purpose: Allocate players with the lowest Secondary_Division.
+		Instructions:
+		Call reset_allotments.
+		Define rest_indices and rest players as above.
+		Set select_fn to choose the player with the minimum secondary division (min(players, key=lambda x: x["Secondary_Division"])).
+		Use allocate_players to fill courts and print allocations.
+	Session 3: Mixed Doubles (Custom Logic)
+		Purpose: Allocate mixed doubles pairs, ensuring players from different divisions are paired.
+		Instructions:
+		Call reset_allotments.
+		Define rest_indices and rest players.
+		Define select_mixed_player to select players who haven’t yet played mixed doubles (p["mixed"] == 0).
+		For each court, select two players with the select_mixed_player function.
+		For the remaining two spots, select players with a division difference of 1 or 1.5 from the existing pair.
+		Mark "mixed" as 1 for all players allocated in this session.
+	Session 4: Highest Division with Specific Division Range
+		Purpose: Allocate players with the highest division, pairing them with players within a specific division range.
+		Instructions:
+		Call reset_allotments.
+		Define rest_indices and rest players.
+		Select Player 1 as the highest-rated player (max(players, key=lambda x: x["Secondary_Division"])) and allocate them to each court.
+		Repeat for Player 2.
+		For Players 3 and 4, select players within 1 or 2 divisions of Player 1’s division.
+		Allocate players and print court allocations.
+	Session 5: Similar to Session 1 but Uses Secondary Division
+		Purpose: Allocate players with the highest Secondary_Division rank to each court.
+		Instructions:
+		Call reset_allotments.
+		Define rest_indices and rest players.
+		Set select_fn to select the player with the highest secondary division (max(players, key=lambda x: x["Secondary_Division"])).
+		Use allocate_players with this function to fill courts.
+		Print the court allocations.
+Output Formatting and Testing
+Print Session Information: For each session, print the names of rested players and the court allocations.
+Labels for Each Session: Wrap each session’s output in clear delimiters like "CHITI 1.3" to separate each session's results.
+Error Handling: If no eligible players are found for a court, display a message stating "No eligible players for court X in session Y."
+Execution Flow
+Initialize players.
+Execute sessions sequentially (session_1 through session_5) by calling each session function and passing players.
+Ensure all output is printed in a structured format for clarity.
+These instructions allow the AI to write the code and understand the logic for each function and session setup.
+
+
+
+
+
+
